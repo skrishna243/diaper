@@ -118,6 +118,7 @@ RSpec.configure do |config|
   # set driver for system tests
   config.before(:each, type: :system) do
     driven_by :selenium_chrome_headless
+    Capybara.server = :puma, { Silent: true }
   end
 
   # Preparatifyication
@@ -136,15 +137,15 @@ RSpec.configure do |config|
     CanonicalItem.delete_all
     # Canonical Items are independent of all other data, though other models depend on
     # their existence, so we'll persist them
-    # DatabaseCleaner.clean_with(:truncation, except: %w(ar_internal_metadata canonical_items))
-    # DatabaseCleaner.strategy = :transaction
-    #__start_db_cleaning_with_log
-    #__sweep_up_db_with_log
+    DatabaseCleaner.clean_with(:truncation, except: %w(ar_internal_metadata canonical_items))
+    DatabaseCleaner.strategy = :transaction
+    __start_db_cleaning_with_log
+    __sweep_up_db_with_log
     seed_canonical_items_for_tests
   end
 
   config.before(:each) do
-    #__start_db_cleaning_with_log
+    __start_db_cleaning_with_log
 
     # prepare a default @organization and @user to always be available for testing
     Rails.logger.info "\n\n-~=> Creating DEFAULT organization"
@@ -160,7 +161,7 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
-    #__sweep_up_db_with_log
+    __sweep_up_db_with_log
     FileUtils.rm_rf(Dir["#{Rails.root}/tmp/storage"])
   end
 
@@ -196,24 +197,44 @@ def seed_canonical_items_for_tests
   Rails.logger.info "~-=> Done creating Canonical Items!"
 end
 
-# def __start_db_cleaning_with_log
-#   Rails.logger.info "======> SISYPHUS, PUSH THAT BOULDER BACK UP THE HILL <========"
-#   Rails.logger.info <<~ASCIIART
-#         ,-'"""`-.
-#       ,'         `.
-#       /        `    \\
-#     (    /          \)
-#     |             " |
-#     (               \)
-#     `.\\\\          \\ /
-#       `:.      , \\ ,\\ _
-#     hh  `:-.___,-`-.{\\\)
-#           `.         |/ \\
-#             `.         \\ \\
-#               `-.      _\\,|
-#                 `.   |,-||
-#                   `..|| ||
-#   ASCIIART
-#
-#   #DatabaseCleaner.start
-# end
+def __start_db_cleaning_with_log
+  Rails.logger.info "======> SISYPHUS, PUSH THAT BOULDER BACK UP THE HILL <========"
+  Rails.logger.info <<~ASCIIART
+        ,-'"""`-.
+      ,'         `.
+      /        `    \\
+    (    /          \)
+    |             " |
+    (               \)
+    `.\\\\          \\ /
+      `:.      , \\ ,\\ _
+    hh  `:-.___,-`-.{\\\)
+          `.         |/ \\
+            `.         \\ \\
+              `-.      _\\,|
+                `.   |,-||
+                  `..|| ||
+  ASCIIART
+
+  DatabaseCleaner.start
+end
+
+def __sweep_up_db_with_log
+  DatabaseCleaner.clean
+  Rails.logger.info "========= ONE MUST IMAGINE SISYPHUS HAPPY ===================="
+  Rails.logger.info <<~ASCIIART
+                  /             _
+        ,-'"""`-.    /         _ |
+      ,'         `.      ;    {\\\)|
+    /        `    \\   :. :   /\\ \\
+    (    /          | .     _/  \\ \\
+    |             " |;  .-``.   _\\,|
+    (               |.-`     `-|,-||
+    \\\\            /.`         ||.||
+      :.     ,   ,`               |.
+    amh  :-.___,-``
+            .`
+          .`
+      .-`
+  ASCIIART
+end
