@@ -29,7 +29,6 @@ Rails.application.routes.draw do
   end
 
   # These are globally accessible
-  resources :canonical_items, only: %i(index show)
   resources :feedback_message, only: [:create]
 
   namespace :api, defaults: { format: "json" } do
@@ -83,6 +82,11 @@ Rails.application.routes.draw do
       end
     end
     resources :diaper_drive_participants, except: [:destroy] do
+      collection do
+        post :import_csv
+      end
+    end
+    resources :vendors, except: [:destroy] do
       collection do
         post :import_csv
       end

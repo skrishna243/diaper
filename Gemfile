@@ -5,7 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-ruby "2.6.1"
+ruby "2.6.2"
 
 gem "api-auth", "~> 2.3"
 gem "bootstrap-sass"
@@ -49,7 +49,7 @@ gem "webpacker", "~> 3.5"
 
 group :development, :test do
   gem "awesome_print"
-  gem "byebug", "~> 10.0", platform: :mri
+  gem "pry-byebug"
   gem "guard-rspec"
   gem "pry-rails"
   gem "rspec-rails", "~> 3.8"
