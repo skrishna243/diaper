@@ -1,3 +1,5 @@
+require 'time_util'
+
 # == Schema Information
 #
 # Table name: distributions
@@ -49,7 +51,11 @@ class Distribution < ApplicationRecord
   delegate :name, to: :partner, prefix: true
 
   def distributed_at
-    issued_at.strftime("%B %-d %Y")
+    if is_midnight(issued_at)
+      issued_at.strftime("%B %-d %Y")
+    else
+      issued_at.to_s(:distribution_date_time)
+    end
   end
 
   def combine_duplicates
@@ -79,7 +85,7 @@ class Distribution < ApplicationRecord
     request.request_items.each do |key, quantity|
       line_items.new(
         quantity: quantity,
-        item: Item.joins(:inventory_items).eager_load(:canonical_item).find_by(organization: request.organization, canonical_items: { partner_key: key }),
+        item: Item.joins(:inventory_items).eager_load(:base_item).find_by(organization: request.organization, base_items: { partner_key: key }),
         itemizable_id: request.id,
         itemizable_type: "Distribution"
       )

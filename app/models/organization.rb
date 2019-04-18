@@ -26,6 +26,8 @@ class Organization < ApplicationRecord
   validates :url, format: { with: URI::DEFAULT_PARSER.make_regexp, message: "it should look like 'http://www.example.com'" }, allow_blank: true
   validates :email, format: /[^@]+@[^@]+/, allow_blank: true
   validate :correct_logo_mime_type
+  validates :deadline_date, numericality: { only_integer: true, less_than_or_equal_to: 28, greater_than_or_equal_to: 1, allow_nil: true }
+  validates :reminder_days_before_deadline, numericality: { only_integer: true, less_than_or_equal_to: 14, greater_than_or_equal_to: 1, allow_nil: true }
 
   has_many :adjustments, dependent: :destroy
   has_many :barcode_items, dependent: :destroy do
@@ -54,8 +56,7 @@ class Organization < ApplicationRecord
 
   accepts_nested_attributes_for :users
 
-  geocoded_by :address
-  after_validation :geocode, if: ->(obj) { obj.address.present? && obj.address_changed? }
+  include Geocodable
 
   # NOTE: when finding Organizations, use Organization.find_by(short_name: params[:organization_id])
   def to_param
@@ -111,8 +112,8 @@ class Organization < ApplicationRecord
   def self.seed_items(org)
     Rails.logger.info "Seeding #{org.name}'s items..."
     org_id = org.id
-    canonical_items = CanonicalItem.pluck(:partner_key, :name).collect { |c| { partner_key: c[0], name: c[1], organization_id: org_id } }
-    Item.create(canonical_items)
+    base_items = BaseItem.pluck(:partner_key, :name).collect { |c| { partner_key: c[0], name: c[1], organization_id: org_id } }
+    Item.create(base_items)
     org.reload
   end
 
