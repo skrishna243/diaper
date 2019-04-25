@@ -10,6 +10,8 @@ require "capybara/rspec"
 require "capybara-screenshot/rspec"
 require "pry"
 require 'sidekiq/testing'
+require 'webdrivers'
+
 Sidekiq::Testing.fake! # fake is the default mode
 
 # Add additional requires below this line. Rails is not loaded until this point!
@@ -148,8 +150,9 @@ RSpec.configure do |config|
     __start_db_cleaning_with_log
 
     # prepare a default @organization and @user to always be available for testing
-    Rails.logger.info "\n\n-~=> Creating DEFAULT organization"
+    Rails.logger.info "\n\n-~=> Creating DEFAULT organization & partner"
     @organization = create(:organization, name: "DEFAULT")
+    @partner = create(:partner, organization: @organization)
     Rails.logger.info "\n\n-~=> Creating DEFAULT admins & user"
     @organization_admin = create(:organization_admin, name: "DEFAULT ORG ADMIN", organization: @organization)
     @user = create(:user, organization: @organization, name: "DEFAULT USER")

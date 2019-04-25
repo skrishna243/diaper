@@ -157,6 +157,7 @@ ActiveRecord::Schema.define(version: 2019_04_07_203351) do
     t.string "path"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "resolved"
     t.index ["user_id"], name: "index_feedback_messages_on_user_id"
   end
 
@@ -182,6 +183,16 @@ ActiveRecord::Schema.define(version: 2019_04_07_203351) do
     t.integer "quantity", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "item_requests", force: :cascade do |t|
+    t.bigint "request_id"
+    t.bigint "item_id"
+    t.integer "quantity"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_item_requests_on_item_id"
+    t.index ["request_id"], name: "index_item_requests_on_request_id"
   end
 
   create_table "items", id: :serial, force: :cascade do |t|
@@ -234,7 +245,7 @@ ActiveRecord::Schema.define(version: 2019_04_07_203351) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "organization_id"
-    t.string "status"
+    t.integer "status", default: 0
     t.boolean "send_reminders", default: false, null: false
     t.index ["organization_id"], name: "index_partners_on_organization_id"
   end
@@ -342,6 +353,8 @@ ActiveRecord::Schema.define(version: 2019_04_07_203351) do
   add_foreign_key "distributions", "partners"
   add_foreign_key "distributions", "storage_locations"
   add_foreign_key "donations", "storage_locations"
+  add_foreign_key "item_requests", "items"
+  add_foreign_key "item_requests", "requests"
   add_foreign_key "requests", "organizations"
   add_foreign_key "requests", "partners"
 end

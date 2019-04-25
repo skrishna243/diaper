@@ -26,6 +26,9 @@ Rails.application.routes.draw do
     resources :organizations
     resources :users
     resources :barcode_items
+    resources :feedback_messages do
+      get :resolve
+    end
   end
 
   # These are globally accessible
@@ -35,6 +38,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :partner_requests, only: %i(create show)
       resources :partner_approvals, only: :create
+      resources :family_requests, only: %i(create show)
     end
   end
 
