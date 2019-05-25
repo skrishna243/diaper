@@ -30,7 +30,6 @@ RSpec.describe "OrganizationRequests", type: :request do
           update_params = { organization: { name: "Thunder Pants" } }
           patch "/#{@organization.id}/manage", params: update_params
         end
-        subject { patch :update, params: default_params.merge(organization: { name: "Thunder Pants" }) }
 
         it "denies access" do
           expect(response).to redirect_to dashboard_path(default_params)
