@@ -21,7 +21,8 @@ RSpec.describe "OrganizationRequests", type: :request do
 
       it "denies access and redirects with an error" do
         expect(response).to redirect_to dashboard_path(default_params)
-        # expect(flash[:error]).to be_present
+        follow_redirect!
+        assert_select ".alert", /Access Denied/
       end
 
       describe "PATCH #update" do
