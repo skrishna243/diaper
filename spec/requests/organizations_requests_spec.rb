@@ -25,6 +25,7 @@ RSpec.describe "OrganizationRequests", type: :request do
         response
       end
 
+      # TODO: May be better suited for a system test
       it "denies access and redirects with an error" do
         expect(subject).to redirect_to dashboard_path(default_params)
         follow_redirect!
