@@ -8,10 +8,10 @@ RSpec.describe "AdjustmentsRequests", type: :request do
   # adjust the attributes here as well.
   let(:valid_attributes) do
     { adjustment: {
-                    organization_id: @organization.id,
-                    storage_location_id: create(:storage_location,
-                                                organization: @organization).id
-                  } }
+      organization_id: @organization.id,
+      storage_location_id: create(:storage_location,
+                                  organization: @organization).id
+    } }
   end
 
   let(:invalid_attributes) do
@@ -48,7 +48,7 @@ RSpec.describe "AdjustmentsRequests", type: :request do
 
     describe "POST #create" do
       context "with valid params" do
-        subject  do
+        subject do
           post adjustments_url(default_params), params: valid_attributes
           response
         end
@@ -63,7 +63,7 @@ RSpec.describe "AdjustmentsRequests", type: :request do
       end
 
       context "with invalid params" do
-        subject  do
+        subject do
           post adjustments_url(default_params), params: invalid_attributes
           response
         end
