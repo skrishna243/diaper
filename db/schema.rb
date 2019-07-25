@@ -245,8 +245,8 @@ ActiveRecord::Schema.define(version: 2019_04_22_130439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "organization_id"
-    t.integer "status", default: 0
     t.boolean "send_reminders", default: false, null: false
+    t.integer "status", default: 0
     t.index ["organization_id"], name: "index_partners_on_organization_id"
   end
 

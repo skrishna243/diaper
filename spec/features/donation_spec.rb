@@ -24,6 +24,9 @@ RSpec.feature "Donations", type: :feature, js: true do
   end
 
   context "When filtering on the index page" do
+    puts "###################"
+    puts __LINE__
+    puts "###################"
     let!(:item) { create(:item) }
     scenario "User can filter by the source" do
       create(:donation, source: Donation::SOURCES[:misc])
@@ -98,6 +101,9 @@ RSpec.feature "Donations", type: :feature, js: true do
   end
 
   context "When creating a new donation" do
+    puts "###################"
+    puts __LINE__
+    puts "###################"
     before(:each) do
       create(:item, organization: @organization)
       create(:storage_location, organization: @organization)
@@ -250,20 +256,30 @@ RSpec.feature "Donations", type: :feature, js: true do
     end
 
     context "via barcode entry" do
+      puts "###################"
+      puts __LINE__
+      puts "###################"
       before(:each) do
+        binding.pry
         initialize_barcodes
+        puts "###################"
+        puts __LINE__
+        puts "###################"
         visit @url_prefix + "/donations/new"
       end
 
       scenario "a user can add items via scanning them in by barcode", :js do
         # enter the barcode into the barcode field
-
+        puts "###################"
+        puts __LINE__
+        puts "###################"
         within "#donation_line_items" do
           expect(page).to have_xpath("//input[@id='_barcode-lookup-0']")
           fill_in "_barcode-lookup-0", with: @existing_barcode.value + 10.chr
         end
         # the form should update
         # save_and_open_page
+        
         expect(page).to have_xpath('//input[@id="donation_line_items_attributes_0_quantity"]')
         expect(page.has_select?("donation_line_items_attributes_0_item_id", selected: @existing_barcode.item.name)).to eq(true)
         qty = page.find(:xpath, '//input[@id="donation_line_items_attributes_0_quantity"]').value
@@ -276,7 +292,7 @@ RSpec.feature "Donations", type: :feature, js: true do
           expect(page).to have_xpath("//input[@id='_barcode-lookup-0']")
           fill_in "_barcode-lookup-0", with: @existing_barcode.value + 10.chr
         end
-
+        expect(page).to have_field "donation_line_items_attributes_0_quantity"
         expect(page).to have_field "donation_line_items_attributes_0_quantity", with: @existing_barcode.quantity.to_s
 
         within "#donation_line_items" do
