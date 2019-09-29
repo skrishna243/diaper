@@ -102,9 +102,7 @@ class DonationsController < ApplicationController
     redirect_to donations_path
   end
 
-  private
-
-  def load_form_collections
+  private def load_form_collections
     @storage_locations = current_organization.storage_locations.alphabetized
     @donation_sites = current_organization.donation_sites.alphabetized
     @diaper_drive_participants = current_organization.diaper_drive_participants.alphabetized
@@ -112,24 +110,24 @@ class DonationsController < ApplicationController
     @items = current_organization.items.active.alphabetized
   end
 
-  def donation_params
+  private def donation_params
     strip_unnecessary_params
     params = compact_line_items
     params.require(:donation).permit(:source, :comment, :storage_location_id, :money_raised, :issued_at, :donation_site_id, :diaper_drive_participant_id, :manufacturer_id, line_items_attributes: %i(id item_id quantity _destroy)).merge(organization: current_organization)
   end
 
-  def donation_item_params
+  private def donation_item_params
     params.require(:donation).permit(:barcode_id, :item_id, :quantity)
   end
 
-  def filter_params
+  private def filter_params
     return {} unless params.key?(:filters)
 
     params.require(:filters).slice(:at_storage_location, :by_source, :from_donation_site, :by_diaper_drive_participant, :from_manufacturer)
   end
 
   # Omits donation_site_id or diaper_drive_participant_id if those aren't selected as source
-  def strip_unnecessary_params
+  private def strip_unnecessary_params
     params[:donation].delete(:donation_site_id) unless params[:donation][:source] == Donation::SOURCES[:donation_site]
     params[:donation].delete(:manufacturer_id) unless params[:donation][:source] == Donation::SOURCES[:manufacturer]
     params[:donation].delete(:diaper_drive_participant_id) unless params[:donation][:source] == Donation::SOURCES[:diaper_drive]
@@ -137,18 +135,14 @@ class DonationsController < ApplicationController
   end
 
   # If line_items have submitted with empty rows, clear those out first.
-  def compact_line_items
+  private def compact_line_items
     return params unless params[:donation].key?(:line_item_attributes)
 
     params[:donation][:line_items_attributes].delete_if { |_row, data| data["quantity"].blank? && data["item_id"].blank? }
     params
   end
 
-  def total_value(donations)
-    total_value_all_donations = 0
-    donations.each do |donation|
-      total_value_all_donations += donation.value_per_itemizable
-    end
-    total_value_all_donations
+  private def total_value(donations)
+    donations.sum(&:value_per_itemizable)
   end
 end
